@@ -6,6 +6,9 @@ $scoreFirstUser = '';
 $scoreSecondUser = '';
 $winner = '';
 
+$question = 'Start the "noughts and crosses" game';
+//$start = cli\choose($question, $choices = 'yn', $default = 'n');
+
 function enterUserName()
 {
     cli\out('Enter first player name' . PHP_EOL);
@@ -16,9 +19,6 @@ function enterUserName()
     cli\out('Hello ' . $secondUserName . '!' . PHP_EOL);
 }
 
-$question = 'Start the "noughts and crosses" game';
-//$start = cli\choose($question, $choices = 'yn', $default = 'n');
-
 $gamesCount = 1;
 $headers = array(' \ ', 'A', 'B', 'C');
 $playingField = array(
@@ -26,7 +26,7 @@ $playingField = array(
     array('2', '2A', '2B', '2C'),
     array('3', '3A', '3B', '3C'),
 );
-//if ($start !== 'n') 
+//if ($start !== 'n');
 cli\out('Game ' . $gamesCount . '!' . PHP_EOL);
 
 $table = new \cli\Table();
@@ -41,29 +41,29 @@ $newPlayingField = makeMove($playingField, $activePlayer = 'X', $playerInput);
 $table->setRows($newPlayingField);
 $table->display();
 
-function makeMove($playingField, $activePlayer = 'X', $playerInput) {
-    $newPlayingField = [];
+function makeMove($playingField, $activePlayer, $playerInput)
+{
+    $newPlayingField = $playingField;
     $replaceCount = 0;
     $searchCount = 0;
-    do {
-        foreach ($playingField as $array){
-            if (!empty($playerInput) && in_array($playerInput, $array)) {
-                $newPlayingField[] = str_replace ( $playerInput , $activePlayer , $array);
-                $replaceCount++;
-            } else {
-                $newPlayingField[] = $array;
-                $searchCount++;
+
+    while ($newPlayingField === $playingField) {
+        foreach ($newPlayingField as &$array) {
+            if (!empty($playerInput) && (strlen($playerInput) == 2) && in_array($playerInput, $array)) {
+                foreach ($array as &$value) {
+                    $value = str_replace($playerInput, $activePlayer, $value);
+                    $replaceCount++;
+                }
             }
+            $searchCount++;
         }
         if ($replaceCount >= 1) {
             break;
         }
         if ($searchCount >= 3) {
             cli\out('Values not found. Insert 2 symbols. First is string number, second is row letter.' . PHP_EOL);
-
             $playerInput = mb_strtoupper(str_replace(' ', '', cli\input()));
-            print_r('search count = '.$searchCount);
         }
-    } while ($replaceCount < 1);
+    }
     return $newPlayingField;
 }
