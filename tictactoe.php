@@ -2,46 +2,109 @@
 
 require_once(__DIR__ . '/vendor/autoload.php');
 
-$scoreFirstUser = '';
-$scoreSecondUser = '';
-$winner = '';
-
+//Запуск игры ("Начать игру?"):
 $question = 'Start the "noughts and crosses" game';
-//$start = cli\choose($question, $choices = 'yn', $default = 'n');
-
-function enterUserName()
-{
-    cli\out('Enter first player name' . PHP_EOL);
-    $firstUserName = cli\input();
-    cli\out('Hello ' . $firstUserName . '!' . PHP_EOL);
-    cli\out('Enter second player name' . PHP_EOL);
-    $secondUserName = cli\input();
-    cli\out('Hello ' . $secondUserName . '!' . PHP_EOL);
+$start = cli\choose($question, $choices = 'yn', $default = 'n');
+if ($start == 'n') {
+    exit('If you don\'t want to, well, don\'t. Leave.' . PHP_EOL);
 }
 
+//1-2) введите username для 1 и 2 players
+$activeUser = changeActiveUser('second');
+$firstUserName = enterUserName(($activeUser));
+$secondUserName = enterUserName(changeActiveUser($activeUser));
+$usersArray = [$firstUserName, $secondUserName];
+$firstPlayer = randomFirstPlayer($usersArray);
+$activeFigure = 'O';
+
+//4) Выводится номер раунда и игрового поля
 $gamesCount = 1;
+cli\out('Game ' . $gamesCount . '!' . PHP_EOL);
+
 $headers = array(' \ ', 'A', 'B', 'C');
 $playingField = array(
     array('1', '1A', '1B', '1C'),
     array('2', '2A', '2B', '2C'),
     array('3', '3A', '3B', '3C'),
 );
-//if ($start !== 'n');
-cli\out('Game ' . $gamesCount . '!' . PHP_EOL);
+displayNewPlayingField($headers, $playingField);
 
-$table = new \cli\Table();
-$table->setHeaders($headers);
-$table->setRows($playingField);
-$table->display();
-
-
+//5) Игрок делает ход (заполняет клетку), и ход передается другому игроку.
 cli\out('Enter 2 symbols. First is string number, second is row letter. Example "2b" is centre of field.' . PHP_EOL);
-$playerInput = mb_strtoupper(str_replace(' ', '', cli\input()));
-$newPlayingField = makeMove($playingField, $activePlayer = 'X', $playerInput);
-$table->setRows($newPlayingField);
-$table->display();
+$resultMatch = makeMove($playingField, $activeFigure, $firstPlayer, $usersArray, $headers);
 
-function makeMove($playingField, $activePlayer, $playerInput)
+function makeMove($playingField, $activeFigure, $firstPlayer, $usersArray, $headers)
+{
+    $resultMatch = '';
+    $counter = 0;
+    $newPlayingField = $playingField;
+    $newActivePlayer = $firstPlayer;
+    $newActiveFigure = $activeFigure;
+    while ($counter < 9) {
+        $newActivePlayer = reverseActivePlayer($newActivePlayer, $usersArray);
+        $newActiveFigure = reverseActiveFigure($newActiveFigure);
+        showWhoseMove($newActivePlayer, $newActiveFigure);
+        $playerInput = mb_strtoupper(str_replace(' ', '', cli\input()));
+        $newPlayingField = insertSymbolToPlayingField($newPlayingField, $newActiveFigure, $playerInput);
+        displayNewPlayingField($headers, $newPlayingField);
+        $counter++;
+    }
+    return $resultMatch;
+}
+function reverseActivePlayer($activePlayer, $usersArray)
+{
+    if ($activePlayer === $usersArray[0]) {
+        return $activePlayer = $usersArray[1];
+    } elseif ($activePlayer === $usersArray[1]) {
+        return $activePlayer = $usersArray[0];
+    }
+}
+
+function reverseActiveFigure($activeFigure)
+{
+    if ($activeFigure == 'X') {
+        return 'O';
+    } elseif ($activeFigure == 'O') {
+        return 'X';
+    }
+}
+
+function displayNewPlayingField($headers, $newPlayingField)
+{
+    $table = new \cli\Table();
+    $table->setHeaders($headers);
+    $table->setRows($newPlayingField);
+    $table->display();
+}
+
+function showWhoseMove($activeUser, $activeFigure)
+{
+    cli\out($activeUser . ' is your move. You - ' . $activeFigure . PHP_EOL . PHP_EOL);
+}
+function randomFirstPlayer($usersArray)
+{
+    $indexPlayer = array_rand($usersArray, 1);
+    return $usersArray[$indexPlayer];
+}
+
+function changeActiveUser($activeUser)
+{
+    if ($activeUser === 'second') {
+        return 'first';
+    } elseif ($activeUser === 'first') {
+        return 'second';
+    }
+}
+
+function enterUserName($activePlayer)
+{
+    cli\out('Enter ' . $activePlayer . ' player name' . PHP_EOL);
+    $userName = cli\input();
+    cli\out('Hello ' . $userName . '!' . PHP_EOL . PHP_EOL);
+    return $userName;
+}
+
+function insertSymbolToPlayingField($playingField, $newActiveFigure, $playerInput)
 {
     $newPlayingField = $playingField;
     $replaceCount = 0;
@@ -51,7 +114,7 @@ function makeMove($playingField, $activePlayer, $playerInput)
         foreach ($newPlayingField as &$array) {
             if (!empty($playerInput) && (strlen($playerInput) == 2) && in_array($playerInput, $array)) {
                 foreach ($array as &$value) {
-                    $value = str_replace($playerInput, $activePlayer, $value);
+                    $value = str_replace($playerInput, $newActiveFigure, $value);
                     $replaceCount++;
                 }
             }
