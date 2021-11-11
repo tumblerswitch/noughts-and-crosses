@@ -19,7 +19,10 @@ $activeFigure = 'O';
 
 //4) Выводится номер раунда и игрового поля
 $gamesCount = 1;
+$firstUserScore = 0;
+$secondUserScore = 0;
 cli\out('Game ' . $gamesCount . '!' . PHP_EOL);
+showScoreboard($firstUserName, $firstUserScore, $secondUserName, $secondUserScore);
 
 $headers = array(' \ ', 'A', 'B', 'C');
 $playingField = array(
@@ -32,6 +35,25 @@ displayNewPlayingField($headers, $playingField);
 //5-7) Игрок делает ход (заполняет клетку), и ход передается другому игроку. Вывод username победителя или "Ничья"
 cli\out('Enter 2 symbols. First is string number, second is row letter. Example "2b" is centre of field.' . PHP_EOL);
 cli\out($resultMatch = makeMove($playingField, $activeFigure, $firstPlayer, $usersArray, $headers));
+
+//8) Обновление таблицы со счетом и ее вывод.
+$activePlayer = 'Tagir';
+$resultMatch = $activePlayer . ' won! Congratulations!' . PHP_EOL;
+$winner = implode(explode(" ", $resultMatch, -2));
+if ($winner == $firstUserName) {
+    $firstUserScore++;
+} elseif ($winner == $secondUserName) {
+    $secondUserScore++;
+}
+showScoreboard($firstUserName, $firstUserScore, $secondUserName, $secondUserScore);
+$gamesCount++;
+
+function showScoreboard($firstUserName, $firstUserScore, $secondUserName, $secondUserScore)
+{
+    $scoreBoard = $firstUserName . ' - ' . $firstUserScore . PHP_EOL .
+        $secondUserName . ' - ' . $secondUserScore . PHP_EOL;
+    cli\out($scoreBoard);
+}
 
 function winCheck($activeFigure, $playingField, $activePlayer)
 {
@@ -84,6 +106,7 @@ function winCheck($activeFigure, $playingField, $activePlayer)
         return $activePlayer . ' won! Congratulations!' . PHP_EOL;
     }
 }
+
 function makeMove($playingField, $activeFigure, $firstPlayer, $usersArray, $headers)
 {
     $resultDraw = 'The game ended in a draw.' . PHP_EOL;
@@ -106,6 +129,7 @@ function makeMove($playingField, $activeFigure, $firstPlayer, $usersArray, $head
     }
     return $resultDraw;
 }
+
 function reverseActivePlayer($activePlayer, $usersArray)
 {
     if ($activePlayer === $usersArray[0]) {
@@ -136,6 +160,7 @@ function showWhoseMove($activeUser, $activeFigure)
 {
     cli\out($activeUser . ' is your move. You - ' . $activeFigure . PHP_EOL . PHP_EOL);
 }
+
 function randomFirstPlayer($usersArray)
 {
     $indexPlayer = array_rand($usersArray, 1);
