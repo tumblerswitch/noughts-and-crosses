@@ -21,6 +21,8 @@ $activeFigure = 'O';
 $gamesCount = 1;
 $firstUserScore = 0;
 $secondUserScore = 0;
+
+startMatch:
 cli\out('Game ' . $gamesCount . '!' . PHP_EOL);
 showScoreboard($firstUserName, $firstUserScore, $secondUserName, $secondUserScore);
 
@@ -37,9 +39,7 @@ cli\out('Enter 2 symbols. First is string number, second is row letter. Example 
 cli\out($resultMatch = makeMove($playingField, $activeFigure, $firstPlayer, $usersArray, $headers));
 
 //8) Обновление таблицы со счетом и ее вывод.
-$activePlayer = 'Tagir';
-$resultMatch = $activePlayer . ' won! Congratulations!' . PHP_EOL;
-$winner = implode(explode(" ", $resultMatch, -2));
+$winner = implode(explode(" ", $resultMatch, -3));
 if ($winner == $firstUserName) {
     $firstUserScore++;
 } elseif ($winner == $secondUserName) {
@@ -47,6 +47,27 @@ if ($winner == $firstUserName) {
 }
 showScoreboard($firstUserName, $firstUserScore, $secondUserName, $secondUserScore);
 $gamesCount++;
+$firstPlayer = reverseActivePlayer($firstPlayer, $usersArray);
+
+//9) Вопрос о следующем раунде.
+$question2 = 'Start again';
+$start = cli\choose($question2, $choices = 'yn', $default = 'n');
+if ($start == 'y') {
+    goto startMatch;
+}
+
+showGlobalWinner($firstUserName, $firstUserScore, $secondUserName, $secondUserScore);
+
+function showGlobalWinner($firstUserName, $firstUserScore, $secondUserName, $secondUserScore)
+{
+    if ($firstUserScore > $secondUserScore) {
+        cli\out($firstUserName . ' WIN THE GAME! CONGRATULATIONS!' . PHP_EOL);
+    } elseif ($firstUserScore < $secondUserScore) {
+        cli\out($secondUserName . ' WIN THE GAME! CONGRATULATIONS!' . PHP_EOL);
+    } else {
+        cli\out('A fish. Friendship won!' . PHP_EOL);
+    }
+}
 
 function showScoreboard($firstUserName, $firstUserScore, $secondUserName, $secondUserScore)
 {
@@ -61,49 +82,49 @@ function winCheck($activeFigure, $playingField, $activePlayer)
     if ($playingField[0][1] == $activeFigure &&
         $playingField[0][2] == $activeFigure &&
         $playingField[0][3] == $activeFigure) {
-        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+        return $activePlayer . ' won this match!' . PHP_EOL;
     }
     //winHorizontal2
     if ($playingField[1][1] == $activeFigure &&
         $playingField[1][2] == $activeFigure &&
         $playingField[1][3] == $activeFigure) {
-        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+        return $activePlayer . ' won this match!' . PHP_EOL;
     }
     //winHorizontal3
     if ($playingField[2][1] == $activeFigure &&
         $playingField[2][2] == $activeFigure &&
         $playingField[2][3] == $activeFigure) {
-        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+        return $activePlayer . ' won this match!' . PHP_EOL;
     }
     //winVerticalA
     if ($playingField[0][1] == $activeFigure &&
         $playingField[1][1] == $activeFigure &&
         $playingField[2][1] == $activeFigure) {
-        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+        return $activePlayer . ' won this match!' . PHP_EOL;
     }
     //winVerticalB
     if ($playingField[0][2] == $activeFigure &&
         $playingField[1][2] == $activeFigure &&
         $playingField[2][2] == $activeFigure) {
-        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+        return $activePlayer . ' won this match!' . PHP_EOL;
     }
     //winVerticalC
     if ($playingField[0][3] == $activeFigure &&
         $playingField[1][3] == $activeFigure &&
         $playingField[2][3] == $activeFigure) {
-        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+        return $activePlayer . ' won this match!' . PHP_EOL;
     }
     //winDiagonal1
     if ($playingField[0][1] == $activeFigure &&
         $playingField[1][2] == $activeFigure &&
         $playingField[2][3] == $activeFigure) {
-        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+        return $activePlayer . ' won this match!' . PHP_EOL;
     }
     //winDiagonal2
     if ($playingField[0][3] == $activeFigure &&
         $playingField[1][2] == $activeFigure &&
         $playingField[2][1] == $activeFigure) {
-        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+        return $activePlayer . ' won this match!' . PHP_EOL;
     }
 }
 
