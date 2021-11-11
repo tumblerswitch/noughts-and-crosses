@@ -29,13 +29,64 @@ $playingField = array(
 );
 displayNewPlayingField($headers, $playingField);
 
-//5) Игрок делает ход (заполняет клетку), и ход передается другому игроку.
+//5-7) Игрок делает ход (заполняет клетку), и ход передается другому игроку. Вывод username победителя или "Ничья"
 cli\out('Enter 2 symbols. First is string number, second is row letter. Example "2b" is centre of field.' . PHP_EOL);
-$resultMatch = makeMove($playingField, $activeFigure, $firstPlayer, $usersArray, $headers);
+cli\out($resultMatch = makeMove($playingField, $activeFigure, $firstPlayer, $usersArray, $headers));
 
+function winCheck($activeFigure, $playingField, $activePlayer)
+{
+    //winHorizontal1
+    if ($playingField[0][1] == $activeFigure &&
+        $playingField[0][2] == $activeFigure &&
+        $playingField[0][3] == $activeFigure) {
+        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+    }
+    //winHorizontal2
+    if ($playingField[1][1] == $activeFigure &&
+        $playingField[1][2] == $activeFigure &&
+        $playingField[1][3] == $activeFigure) {
+        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+    }
+    //winHorizontal3
+    if ($playingField[2][1] == $activeFigure &&
+        $playingField[2][2] == $activeFigure &&
+        $playingField[2][3] == $activeFigure) {
+        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+    }
+    //winVerticalA
+    if ($playingField[0][1] == $activeFigure &&
+        $playingField[1][1] == $activeFigure &&
+        $playingField[2][1] == $activeFigure) {
+        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+    }
+    //winVerticalB
+    if ($playingField[0][2] == $activeFigure &&
+        $playingField[1][2] == $activeFigure &&
+        $playingField[2][2] == $activeFigure) {
+        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+    }
+    //winVerticalC
+    if ($playingField[0][3] == $activeFigure &&
+        $playingField[1][3] == $activeFigure &&
+        $playingField[2][3] == $activeFigure) {
+        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+    }
+    //winDiagonal1
+    if ($playingField[0][1] == $activeFigure &&
+        $playingField[1][2] == $activeFigure &&
+        $playingField[2][3] == $activeFigure) {
+        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+    }
+    //winDiagonal2
+    if ($playingField[0][3] == $activeFigure &&
+        $playingField[1][2] == $activeFigure &&
+        $playingField[2][1] == $activeFigure) {
+        return $activePlayer . ' won! Congratulations!' . PHP_EOL;
+    }
+}
 function makeMove($playingField, $activeFigure, $firstPlayer, $usersArray, $headers)
 {
-    $resultMatch = '';
+    $resultDraw = 'The game ended in a draw.' . PHP_EOL;
     $counter = 0;
     $newPlayingField = $playingField;
     $newActivePlayer = $firstPlayer;
@@ -47,9 +98,13 @@ function makeMove($playingField, $activeFigure, $firstPlayer, $usersArray, $head
         $playerInput = mb_strtoupper(str_replace(' ', '', cli\input()));
         $newPlayingField = insertSymbolToPlayingField($newPlayingField, $newActiveFigure, $playerInput);
         displayNewPlayingField($headers, $newPlayingField);
+        $win = winCheck($newActiveFigure, $newPlayingField, $newActivePlayer);
+        if ($win == true) {
+            return $win;
+        }
         $counter++;
     }
-    return $resultMatch;
+    return $resultDraw;
 }
 function reverseActivePlayer($activePlayer, $usersArray)
 {
