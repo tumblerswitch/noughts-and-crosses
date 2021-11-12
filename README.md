@@ -1,17 +1,37 @@
 # noughts-and-crosses
 ## Требования:
 
-- Для проекта использовать [composer](https://getcomposer.org/). Инциализиовать с помощью него проект и реализовать autoload
+- Для проекта используй composer. Инициализируй с помощью него проект и реализуй autoload
 - Возможность запускать игру с помощью `./bin/tictactoe`
 - Игра для двоих. Ходы совершать поочередно (сначала ходит Х, потом О)
-- Для вывода использовать библиотеку [php-cli-tools](https://github.com/wp-cli/php-cli-tools)
+- Для вывода использовать библиотеку php-cli-tools
 - Не использовать классы. Только функции
 - Каждый ход обновлять таблицу с крестиками-ноликами
 - Использовать [phpcs](https://github.com/squizlabs/PHP_CodeSniffer) для проверки кода. Стандарт - PSR12
     - `composer exec --verbose phpcs -- --standard=PSR12 <folder1> <folder2> ...`
-- При завершении добавить в [README.md](http://README.md) запись [asciinema](https://asciinema.org/), чтобы увидеть как работает приложение
+- Зарегистрироваться на CodeClimate (Quality) и разместить там свой проект как OpenSource. CodeClimate покажет оценку проекта: качество кода и количество тестов
+- Создай файл [README.md](http://README.md) файл. В нем необходимо указать
+    - Описание приложения
+    - Зависимости (требования) приложения для запуска
+    - Инструкция по установке и запуску
+    - Пример работы приложения (например, asciinema)
+    - Бейдж от codeclimate
+    
 
-##План:
+### Подсказки
+
+- Можно подглядывать в оформленный репозиторий от Hexlet: https://github.com/hexlet-boilerplates/php-package
+
+### Ссылки
+
+- [Composer](https://getcomposer.org/)
+    - [composer binaries](https://getcomposer.org/doc/articles/vendor-binaries.md)
+    - [composer files autoload](https://getcomposer.org/doc/04-schema.md#files)
+- [PHP CLI Tools](https://github.com/wp-cli/php-cli-tools)
+- [Codeclimate](https://codeclimate.com/)
+- [Asciinema](https://asciinema.org/)
+
+## План:
 - Игра для двух игроков. player vs player2 
 - Запуск игру с помощью ввода в консоль "php tictactoe.php"
 
